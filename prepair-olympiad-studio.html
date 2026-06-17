@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <style>
   :root{
     --navy:#0F1338; --orange:#FF8A00; --teal:#00B5B0;
@@ -460,6 +461,16 @@ function render(){
   if(state.tab==="T")renderTheory(q);else if(state.tab==="Q")renderQuestion(q);else renderSolution(q);
 }
 function sparkSvg(){return `<svg class="hi" viewBox="0 0 24 24"><path d="M3 12 Q10 10 12 3 Q14 10 21 12 Q14 14 12 21 Q10 14 3 12 Z" fill="none" stroke="#1C6FB8" stroke-width="1.6"/></svg>`;}
+function renderStemContent(stemText){
+  if(!stemText)return"";
+  if(/^https?:\/\/.*\.(png|jpg|jpeg|gif|webp)$/i.test(stemText)){
+    return`<img src="${stemText}" style="max-width:100%;height:auto;border-radius:8px;margin:10px 0">`;
+  }
+  if(/<[a-z][\s\S]*>/i.test(stemText)){
+    return stemText;
+  }
+  return stemText;
+}
 function renderQuestion(q){
   const opts=q.opts.map((o,i)=>{
     let cls="opt";let res="";
@@ -472,17 +483,20 @@ function renderQuestion(q){
   else{after=`<div class="qactions"><button class="btn primary" id="revealBtn">Reveal answer</button>${state.hint<q.sol.length?`<button class="btn" id="hintBtn">${sparkSvg()} ${state.hint===0?"Need a hint?":"Next hint"}</button>`:`<button class="btn" disabled>No more hints</button>`}</div>`;}
   let hints="";
   for(let i=0;i<state.hint&&i<q.sol.length&&!state.revealed;i++){hints+=`<div class="hint-card">${sparkSvg()}<div><span class="hlabel">Hint ${i+1}</span><div class="ht">${q.sol[i]}</div></div></div>`;}
+  const stemContent=renderStemContent(q.stem);
   $("lbody").innerHTML=`
     <div class="meta"><span class="tag exam">${q.exam}</span><span class="tag lvl">${q.lvl}</span><span class="tag topic">${q.ch} · ${q.tp}</span><span class="tag">${q.yr}</span></div>
-    <div class="stem"><span class="qn">${state.index+1}</span>${q.stem}</div>
+    <div class="stem"><span class="qn">${state.index+1}</span>${stemContent}</div>
     <div class="opts">${opts}</div>${after}${hints}`;
   document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{if(state.revealed)return;state.picked=+b.dataset.i;render();});
   const rb=$("revealBtn");if(rb)rb.onclick=()=>{state.revealed=true;state.done[qKey(state.index)]=true;pop();render();};
   const hb=$("hintBtn");if(hb)hb.onclick=()=>{state.hint++;render();};
+  if(window.MathJax)MathJax.typesetPromise().catch(e=>console.log(e));
 }
 function renderSolution(q){
-  const solutionText=q.sol.join(" ");
-  $("lbody").innerHTML=`<div class="ms-intro"><span class="dot"></span> Solution · ${q.ch} → ${q.tp}</div><div style="font-size:15px;line-height:1.6;color:var(--ink);margin:20px 0;padding:16px;background:var(--grey-100);border-radius:10px">${solutionText}</div><div class="answer-box"><span class="key">${LETTERS[q.c]}</span><div><div class="lbl">Correct answer</div><div class="val">${q.ans}</div></div></div>`;
+  const solutionSteps=q.sol.map(step=>renderStemContent(step)).join("<br>");
+  $("lbody").innerHTML=`<div class="ms-intro"><span class="dot"></span> Solution · ${q.ch} → ${q.tp}</div><div style="font-size:15px;line-height:1.6;color:var(--ink);margin:20px 0;padding:16px;background:var(--grey-100);border-radius:10px">${solutionSteps}</div><div class="answer-box"><span class="key">${LETTERS[q.c]}</span><div><div class="lbl">Correct answer</div><div class="val">${q.ans}</div></div></div>`;
+  if(window.MathJax)MathJax.typesetPromise().catch(e=>console.log(e));
 }
 const WARN='<svg class="ti" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>';
 function renderTheory(q){

@@ -30,35 +30,37 @@ except ImportError:
 
 # ── Column name → SQLite column name mapping ──────────────────────────────────
 COLUMN_MAP = {
-    "Exam":       "exam",
-    "Difficulty": "difficulty",
-    "Chapter":    "chapter",
-    "Topic":      "topic",
-    "Question":   "question",
-    "Option A":   "option_a",
-    "Option B":   "option_b",
-    "Option C":   "option_c",
-    "Option D":   "option_d",
-    "Option E":   "option_e",
-    "Solution":   "solution",
+    "Exam":           "exam",
+    "Difficulty":     "difficulty",
+    "Chapter":        "chapter",
+    "Topic":          "topic",
+    "Question":       "question",
+    "Option A":       "option_a",
+    "Option B":       "option_b",
+    "Option C":       "option_c",
+    "Option D":       "option_d",
+    "Option E":       "option_e",
+    "Solution":       "solution",
+    "Correct Option": "correct_option",
 }
 
 CREATE_TABLE_SQL = """
 CREATE TABLE IF NOT EXISTS questions (
-    id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    exam        TEXT,
-    difficulty  TEXT,
-    chapter     TEXT,
-    topic       TEXT,
-    question    TEXT    NOT NULL,
-    option_a    TEXT,
-    option_b    TEXT,
-    option_c    TEXT,
-    option_d    TEXT,
-    option_e    TEXT,
-    solution    TEXT,
-    source_file TEXT,
-    loaded_at   DATETIME DEFAULT (datetime('now'))
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    exam            TEXT,
+    difficulty      TEXT,
+    chapter         TEXT,
+    topic           TEXT,
+    question        TEXT    NOT NULL,
+    option_a        TEXT,
+    option_b        TEXT,
+    option_c        TEXT,
+    option_d        TEXT,
+    option_e        TEXT,
+    solution        TEXT,
+    correct_option  TEXT,
+    source_file     TEXT,
+    loaded_at       DATETIME DEFAULT (datetime('now'))
 );
 """
 
@@ -114,11 +116,11 @@ def load_excel(excel_path: str, db_path: str) -> None:
         INSERT INTO questions
             (exam, difficulty, chapter, topic, question,
              option_a, option_b, option_c, option_d, option_e,
-             solution, source_file)
+             solution, correct_option, source_file)
         VALUES
             (:exam, :difficulty, :chapter, :topic, :question,
              :option_a, :option_b, :option_c, :option_d, :option_e,
-             :solution, :source_file)
+             :solution, :correct_option, :source_file)
     """
 
     for raw_row in rows_iter:

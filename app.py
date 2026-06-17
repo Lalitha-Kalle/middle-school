@@ -136,6 +136,14 @@ def get_questions():
         solution_text = row["solution"] or ""
         solution_steps = [s.strip() for s in solution_text.split("\n") if s.strip()]
 
+        # Convert correct_option letter (A-E) to index (0-4)
+        correct_index = 0
+        correct_option = row["correct_option"]
+        if correct_option:
+            letter = correct_option.strip().upper()
+            if letter in "ABCDE":
+                correct_index = ord(letter) - ord('A')
+
         q = {
             "id": row["id"],
             "exam": row["exam"],
@@ -145,9 +153,9 @@ def get_questions():
             "yr": 2024,  # Default year since not in DB
             "stem": row["question"],
             "opts": options,
-            "c": 0,  # Default correct answer index (would need to be marked in DB)
+            "c": correct_index,
             "sol": solution_steps or ["Work through this problem step by step."],
-            "ans": "See solution",
+            "ans": correct_option or "See solution",
         }
         questions.append(q)
 
