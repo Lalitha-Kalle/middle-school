@@ -420,7 +420,7 @@ const $=id=>document.getElementById(id);
 const uniq=a=>[...new Set(a)];
 
 // API functions to fetch data from Flask backend
-const API_BASE="http://127.0.0.1:5000/api";
+const API_BASE="/api";
 
 async function exams(){
   try{const r=await fetch(API_BASE+"/exams");return r.ok?r.json():[]}catch(e){console.error("Failed to load exams:",e);return[]}
