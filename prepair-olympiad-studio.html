@@ -1958,6 +1958,7 @@
       $("tabT").classList.toggle("active", state.tab === "T"); $("tabQ").classList.toggle("active", state.tab === "Q"); $("tabS").classList.toggle("active", state.tab === "S");
       renderPalette();
       if (!q) { $("qCounter").textContent = "—"; $("lbody").innerHTML = `<div class="empty"><strong>No questions here yet</strong>Pick another exam, difficulty, chapter or topic to load problems.</div>`; $("prevBtn").disabled = $("nextBtn").disabled = true; return; }
+      $("lvlN").textContent = q.lvl;
       $("qCounter").textContent = `Q${state.index + 1} of ${state.list.length}`;
       $("prevBtn").disabled = state.index === 0; $("nextBtn").disabled = state.index === state.list.length - 1;
       if (state.tab === "T") renderTheory(q); else if (state.tab === "Q") renderQuestion(q); else renderSolution(q);
